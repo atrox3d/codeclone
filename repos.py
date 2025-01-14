@@ -113,7 +113,7 @@ def build_data(root:str, *exclude:str, relative:bool, data:dict=None) -> dict:
     return data
 
 
-def save_to_json(jsonpath:str, root:str, *exclude:str, relative:bool, data:dict=None) -> None:
+def save(jsonpath:str, root:str, *exclude:str, relative:bool, data:dict=None) -> None:
     ''' compound function: scans path and saves json'''
     
     data = build_data(root, *exclude, relative=True)
@@ -122,7 +122,7 @@ def save_to_json(jsonpath:str, root:str, *exclude:str, relative:bool, data:dict=
         json.dump(data, fp, indent=2)
 
 
-def load_from_json(json_path:str) -> dict:
+def load(json_path:str) -> dict:
     with open(json_path) as fp:
         return json.load(fp)
 
@@ -161,11 +161,31 @@ def parse(data:dict, parents:list[str]=None, repos:dict=None, level:int=None):
 
 
 def restore(data:dict, root:str):
+    
     descriptor = get_descriptor(data)
     data = get_data(data)
     
     repos = parse(data)
+    assert len(repos) == descriptor['total'], (
+        f'total json repos ({descriptor['total']}) '
+        f'differ from actual repos ({len(repos)})'
+    )
     
     for path, remote in repos.items():
-        print(f'{path:90} {remote}')
 
+        if descriptor['relative']:
+            path = Path(root).expanduser() / path
+        
+        mkdir = f'mkdir -p {path}'
+        print(mkdir)
+        
+        if remote is not None:
+            cd = f'cd {mkdir}'
+            print(cd)
+
+            clone = f'git clone {remote}'
+            print(clone)
+        
+            cdback = f'cd -'
+            print(cdback)
+            
