@@ -135,9 +135,21 @@ def get_data(data:dict) -> dict:
     return data['data']
 
 
+def parse(data:dict, descriptor:dict, parents:list[str]=None, repos:dict=None):
+    
+    repos = repos if repos is not None else {}
+    parents = parents if parents is not None else []
+    
+    for k, v in data.items():
+        parents.append(k)
+        if isinstance(v, dict):
+            return parse(data, descriptor, parents, repos)
+        repos[Path(*parents)] = v
+        return repos
+
+
 def restore(data:dict, root:str):
     descriptor = get_descriptor(data)
     data = get_data(data)
-    
     
 
