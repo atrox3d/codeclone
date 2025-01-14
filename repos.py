@@ -17,6 +17,7 @@ def scan(start_path:str, relative:bool=True) -> list[Path]:
 
 
 def add_to_dict(path:Path, d:dict=None) -> dict:
+    
     d = d if d is not None else {}
     c = d
 
@@ -26,17 +27,15 @@ def add_to_dict(path:Path, d:dict=None) -> dict:
     
     return d
 
-def add_remote(path:Path, root:str=None, d:dict=None) -> dict:
-    if root is not None:
-        gitpath = Path(root).expanduser() / path
-    # print('ADD_REMOTE', path)
-    remote = simplegit.git.get_remote(gitpath)
-    
-    print(path)
-    for part in path.parts[:-1]:
-        d = d[part]
-    
-    print(path.parts, d)
-    print(d[path.parts[-1]])
-    d[path.parts[-1]] = remote
 
+def add_remote(path:Path, root:str=None, d:dict=None) -> dict:
+    
+    if root is not None:
+        git_path = Path(root).expanduser() / path
+    
+    remote = simplegit.git.get_remote(git_path)
+    
+    *parents, repo = path.parts
+    for part in parents:
+        d = d[part]
+    d[repo] = remote
