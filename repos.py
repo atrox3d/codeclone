@@ -135,18 +135,28 @@ def get_data(data:dict) -> dict:
     return data['data']
 
 
-def parse(data:dict, descriptor:dict, parents:list[str]=None, repos:dict=None):
+def parse(data:dict, parents:list[str]=None, repos:dict=None, level:int=None):
     
     repos = repos if repos is not None else {}
     parents = parents if parents is not None else []
+    level = level if level is not None else 0
     
-    for k, v in data.items():
-        parents.append(k)
-        if isinstance(v, dict):
-            return parse(data[k], descriptor, parents, repos)
+    # print(f'{level*"  "}{parents = }')
+    
+    items = list(data.items())
+    for folder, value in items:
+        # print(f'{level*"  "}{folder = }')
+
+        if isinstance(value, dict):
+            level += 1
+            # parents.append(folder)
+            parse(data[folder], [*parents, folder], repos, level)
+            # return result
         else:
-            repos[str(Path(*parents))] = v
-            parents = []
+            path = str(Path(*parents, folder))
+            # print(path, value)
+            repos[path] = value
+
     return repos
 
 
@@ -154,4 +164,8 @@ def restore(data:dict, root:str):
     descriptor = get_descriptor(data)
     data = get_data(data)
     
+    repos = parse(data)
+    
+    for path, remote in repos.items():
+        print(f'{path:90} {remote}')
 

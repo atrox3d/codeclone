@@ -8,10 +8,8 @@ root = '~/code'
 
 # print(repos.load_from_json('repos.json'))
 
+
+
+
 data = repos.load_from_json('repos.json')
-descriptor = repos.get_descriptor(data)
-data = repos.get_data(data)
-
-reps = repos.parse(data, descriptor)
-
-print(json.dumps(reps, indent=2))
+repos.restore(data, '~/code')
