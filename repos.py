@@ -58,7 +58,7 @@ def add_to_dict(path:Path, d:dict=None) -> dict:
     return d
 
 
-def add_remote(path:Path, d:dict, root:str=None) -> None:
+def add_remote(path:Path, d:dict, root:str=None) -> str|None:
     ''' add git repo remote to the last key or None '''
     
     if root is not None:
@@ -70,14 +70,45 @@ def add_remote(path:Path, d:dict, root:str=None) -> None:
     for part in parents:
         d = d[part]
     d[repo] = remote
+    
+    return remote
+
+
+def add_descriptor(data:dict, root:str, *exclude:str, **kwargs) -> dict:
+    descriptor = {
+        'root':root,
+        'exclude':exclude,
+        **kwargs
+    }
+    new = {}
+    new['descriptor'] = descriptor
+    new['data'] = data
+    return new
 
 
 def build_data(root:str, *exclude:str, relative:bool, data:dict=None) -> dict:
     ''' compound function: scans path and returns dict '''
 
+    total = remotes = locals = 0
+
     for repo in scan(root, *exclude, relative=relative):
         data = add_to_dict(repo, data)
-        add_remote(repo, data, root)
+        remote = add_remote(repo, data, root)
+        total += 1
+        if remote is not None:
+            remotes += 1
+        else:
+            locals += 1
+    
+    data = add_descriptor(
+            data,
+            root, 
+            *exclude, 
+            relative=relative, 
+            total=total,
+            remotes=remotes,
+            locals=locals,
+    )
     
     return data
 
@@ -94,4 +125,19 @@ def save_to_json(jsonpath:str, root:str, *exclude:str, relative:bool, data:dict=
 def load_from_json(json_path:str) -> dict:
     with open(json_path) as fp:
         return json.load(fp)
+
+
+def get_descriptor(data:dict) -> dict:
+    return data['descriptor']
+
+
+def get_data(data:dict) -> dict:
+    return data['data']
+
+
+def restore(data:dict, root:str):
+    descriptor = get_descriptor(data)
+    data = get_data(data)
+    
+    
 
