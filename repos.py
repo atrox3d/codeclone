@@ -160,7 +160,7 @@ def parse(data:dict, parents:list[str]=None, repos:dict=None, level:int=None):
     return repos
 
 
-def restore(data:dict, root:str):
+def restore(data:dict, root:str, dry_run:bool=True, skip_existing:bool=True):
     
     descriptor = get_descriptor(data)
     data = get_data(data)
@@ -171,21 +171,44 @@ def restore(data:dict, root:str):
         f'differ from actual repos ({len(repos)})'
     )
     
+    skipped = {}
+    created = {}
+    cwd = Path.cwd()
     for path, remote in repos.items():
-
+        
+        path = Path(path)
         if descriptor['relative']:
             path = Path(root).expanduser() / path
+        
+        git_path = (path / '.git/')
+        if git_path.exists():
+            if skip_existing:
+                print(f'WARNING | path exists: {git_path}')
+                print(f'WARNING | skipping...')
+                skipped[path] = remote
+                continue
+            else:
+                raise FileExistsError(git_path)
         
         mkdir = f'mkdir -p {path}'
         print(mkdir)
         
+        created[path] = remote
         if remote is not None:
             cd = f'cd {mkdir}'
             print(cd)
 
-            clone = f'git clone {remote}'
+            clone = f'git clone {remote} .'
             print(clone)
         
-            cdback = f'cd -'
+            cdback = f'cd {cwd}'
             print(cdback)
-            
+    
+    print(created.keys())
+    print()
+    print()
+    print()
+    print(skipped.keys())
+    
+    assert skipped != created
+    
