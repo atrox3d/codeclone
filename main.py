@@ -1,12 +1,17 @@
 import json
 import repos
 
-d = {}
+data = {}
 root = '~/code'
 
-for repo in repos.scan(root, relative=True):
-    d = repos.add_to_dict(repo, d)
-    repos.add_remote(repo, d, root)
+# for repo in repos.scan(root, relative=True):
+    # data = repos.add_to_dict(repo, data)
+    # repos.add_remote(repo, data, root)
+# 
+# with open('repos.json', 'w') as fp:
+    # json.dump(data, fp, indent=2)
+# 
+# 
+repos.save_to_json('repos.json', root, relative=True)
 
-with open('repos.json', 'w') as fp:
-    json.dump(d, fp, indent=2)
+
