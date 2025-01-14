@@ -89,3 +89,9 @@ def save_to_json(jsonpath:str, root:str, *exclude:str, relative:bool, data:dict=
     
     with open(jsonpath, 'w') as fp:
         json.dump(data, fp, indent=2)
+
+
+def load_from_json(json_path:str) -> dict:
+    with open(json_path) as fp:
+        return json.load(fp)
+
