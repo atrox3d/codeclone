@@ -143,9 +143,11 @@ def parse(data:dict, descriptor:dict, parents:list[str]=None, repos:dict=None):
     for k, v in data.items():
         parents.append(k)
         if isinstance(v, dict):
-            return parse(data, descriptor, parents, repos)
-        repos[Path(*parents)] = v
-        return repos
+            return parse(data[k], descriptor, parents, repos)
+        else:
+            repos[str(Path(*parents))] = v
+            parents = []
+    return repos
 
 
 def restore(data:dict, root:str):
