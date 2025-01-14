@@ -7,7 +7,7 @@ from atrox3d import simplegit
 def scan(
         root:str,
         *exclude:str,
-        default_exclude:tuple=('.venv',), 
+        default_exclude:tuple=('.venv',),
         relative:bool=True
 ) -> list[Path]:
     '''
@@ -89,4 +89,3 @@ def save_to_json(jsonpath:str, root:str, *exclude:str, relative:bool, data:dict=
     
     with open(jsonpath, 'w') as fp:
         json.dump(data, fp, indent=2)
-
