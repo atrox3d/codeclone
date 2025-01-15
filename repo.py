@@ -38,9 +38,8 @@ def scan(
     return repo_dirs
 
 
-def build_data(root:str, *exclude:str, relative:bool, data:dict=None) -> dict:
-    ''' compound function: scans path and returns dict '''
-
+def backup(json_path:str, root:str, *exclude:str, relative:bool, data:dict=None, indent:int=2) -> None:
+    ''' compound function: scans path and saves json'''
     total = remotes = locals = 0
 
     for repo in scan(root, *exclude, relative=relative):
@@ -61,14 +60,7 @@ def build_data(root:str, *exclude:str, relative:bool, data:dict=None) -> dict:
             remotes=remotes,
             locals=locals,
     )
-    
-    return data
 
-
-def backup(json_path:str, root:str, *exclude:str, relative:bool, data:dict=None, indent:int=2) -> None:
-    ''' compound function: scans path and saves json'''
-    
-    data = build_data(root, *exclude, relative=True)
     save(data, json_path, indent)
 
 
