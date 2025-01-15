@@ -1,10 +1,10 @@
 import json
-import repos
+import repo
 
 data = {}
 root = '~/code'
 json_path = 'repos.json'
 
-repos.save(json_path, root, relative=True)
+repo.backup(json_path, root, relative=True)
 
-repos.restore(json_path, '~/code')
+repo.restore(json_path, '~/code')
