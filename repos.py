@@ -94,13 +94,13 @@ def restore(json_path:str, root:str, dry_run:bool=True, skip_existing:bool=True)
             else:
                 raise FileExistsError(git_path)
         
-        commands.run(f'mkdir -p {path}')
+        commands.run(f'mkdir -p {path}', dry_run)
         
         created[path] = remote
         if remote is not None:
-            # commands.run(f'cd {path}')
-            commands.run(f'git clone {remote} .')
-            # commands.run(f'cd {cwd}')
+            # commands.run(f'cd {path}', dry_run)
+            commands.run(f'git clone {remote} .', dry_run)
+            # commands.run(f'cd {cwd}', dry_run)
     
     assert skipped != created
     

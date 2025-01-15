@@ -22,6 +22,11 @@ def parse(cmdline:str):
 
 
 @pushd
-def run(cmdline:str):
+def run(cmdline:str, dry_run:bool=True):
     cmd, *params = parse(cmdline)
-    print(f'running {cmd} {" ".join(params)}')
+    
+    
+    if not dry_run:
+        print(f'running {cmd} {" ".join(params)}')
+    else:
+        print(f'DRY_RUN | running {cmd} {" ".join(params)}')

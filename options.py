@@ -1,9 +1,9 @@
 import argparse
 
 
-def add_backup_parser(subcommands:argparse._SubParsersAction):
+def add_backup_parser(subcommands:argparse._SubParsersAction) -> argparse.ArgumentParser:
     
-    backup = subcommands.add_parser('backup')
+    backup:argparse.ArgumentParser = subcommands.add_parser('backup')
     backup.add_argument(
             '-x', '--exclude',
             # dest='array',
@@ -12,25 +12,35 @@ def add_backup_parser(subcommands:argparse._SubParsersAction):
             type=str,
             default=[]
     )
-    backup.add_argument('-r', '--relative', action='store_true', default=False)
+    backup.add_argument('-a', '--absolute', action='store_true')
     backup.add_argument('-i', '--indent', type=int, default=2)
-
-
-def add_restore_parser(subcommands:argparse._SubParsersAction):
     
-    restore = subcommands.add_parser('restore')
+    return backup
+
+
+def add_restore_parser(subcommands:argparse._SubParsersAction) -> argparse.ArgumentParser:
+    
+    restore:argparse.ArgumentParser  = subcommands.add_parser('restore')
     restore.add_argument('-r', '--run', action='store_true', default=False)
     restore.add_argument('-s', '--skipexisting', action='store_true', default=True)
+    
+    return restore
+
+
+def add_common_args(parser:argparse.ArgumentParser) -> None:
+    parser.add_argument('-j', '--json', required=True)
+    parser.add_argument('-p', '--path', required=True)
 
 
 def get_options() -> argparse.Namespace:
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('-j', '--json', required=True)
-    parser.add_argument('-r', '--root', required=True)
     
     subcommands = parser.add_subparsers(dest='command', required=True)
-    add_backup_parser(subcommands)
-    add_restore_parser(subcommands)
+    backup = add_backup_parser(subcommands)
+    add_common_args(backup)
+    
+    restore = add_restore_parser(subcommands)
+    add_common_args(restore)
     
     return parser.parse_args()
