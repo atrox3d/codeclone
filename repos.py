@@ -3,6 +3,7 @@ from pathlib import Path
 import paths
 import data as dtx
 import files
+import commands
 
 def scan(
         root:str,
@@ -94,25 +95,13 @@ def restore(json_path:str, root:str, dry_run:bool=True, skip_existing:bool=True)
             else:
                 raise FileExistsError(git_path)
         
-        mkdir = f'mkdir -p {path}'
-        print(mkdir)
+        commands.run(f'mkdir -p {path}')
         
         created[path] = remote
         if remote is not None:
-            cd = f'cd {mkdir}'
-            print(cd)
-
-            clone = f'git clone {remote} .'
-            print(clone)
-        
-            cdback = f'cd {cwd}'
-            print(cdback)
-    
-    print(created.keys())
-    print()
-    print()
-    print()
-    print(skipped.keys())
+            # commands.run(f'cd {path}')
+            commands.run(f'git clone {remote} .')
+            # commands.run(f'cd {cwd}')
     
     assert skipped != created
     
