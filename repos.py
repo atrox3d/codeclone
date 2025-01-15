@@ -78,7 +78,6 @@ def restore(json_path:str, root:str, dry_run:bool=True, skip_existing:bool=True)
     
     skipped = {}
     created = {}
-    cwd = Path.cwd()
     for path, remote in repos.items():
         
         path = Path(path)
