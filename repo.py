@@ -1,7 +1,8 @@
 from pathlib import Path
 
 from paths import filter_excluded_paths, filter_only_dirs, make_relative_paths
-from data import add_descriptor, add_remote, add_to_dict, get_data, get_descriptor, load, parse, save
+from data import add_descriptor, add_remote, add_to_dict, get_data, get_descriptor, parse
+from files import load, save
 
 
 def scan(
