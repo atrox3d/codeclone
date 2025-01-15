@@ -9,10 +9,23 @@ def make_relative_paths(root:Path, *paths:str|Path) -> list[Path]:
     return [path.relative_to(root) for path in paths]
 
 
+def filter_excluded_paths(paths:list[Path], exclude:list[str]) -> list[Path]:
+    '''  '''
+    
+    return [path for path in paths 
+                if not any(part in exclude for part in path.parts)]
+
+
+def filter_only_dirs(paths:list[Path]) -> list[Path]:
+    '''  '''
+    
+    return [path.parent for path in paths if path.is_dir()]
+
+
 def scan(
         root:str,
         *exclude:str,
-        default_exclude:tuple=('.venv',),
+        default_exclude:tuple=('.venv', '.git'),
         relative:bool=True
 ) -> list[Path]:
     '''
@@ -24,24 +37,20 @@ def scan(
     '''
     
     # expand ~ and check if valid path
-    start = Path(root).expanduser()
-    assert start.exists(), f'path {root} does not exist'
+    root = Path(root).expanduser()
+    assert root.exists(), f'path {root} does not exist'
     
     # create exclude list
     exclude_paths = [*default_exclude, *exclude]
     
     # scan all git repos
-    repos = start.glob('**/.git/')
-    repo_dirs =  [
-            d.parent for d in repos                     # save parent
-            if d.is_dir()                               # if d is a dir
-            and not any(                                # and does not contain
-                p in exclude_paths for p in d.parts     # any of excluded names
-            )
-    ]
+    git_repos = root.glob('**/.git/')
+    
+    repo_dirs = filter_only_dirs(git_repos)
+    repo_dirs = filter_excluded_paths(repo_dirs, exclude_paths)
     
     if relative:
-        repo_dirs = make_relative_paths(start, *repo_dirs)
+        repo_dirs = make_relative_paths(root, *repo_dirs)
     
     return repo_dirs
 
