@@ -23,7 +23,6 @@ def scan(
     assert start.exists(), f'path {root} does not exist'
     
     # create exclude list
-    # exclude = [] if exclude is None else exclude
     exclude_paths = [*default_exclude, *exclude]
     
     # scan all git repos
@@ -43,22 +42,22 @@ def scan(
     return repo_dirs
 
 
-def add_to_dict(path:Path, d:dict=None) -> dict:
+def add_to_dict(path:Path, data:dict=None) -> dict:
     ''' create or add paths to dice as keys:dict with the last being {} '''
     
     # create dict if not passed
-    d = d if d is not None else {}
+    data = data if data is not None else {}
     
-    cursor = d
+    cursor = data
 
     for part in path.parts:
         cursor[part] = cursor.get(part, {})
         cursor = cursor[part]
     
-    return d
+    return data
 
 
-def add_remote(path:Path, d:dict, root:str=None) -> str|None:
+def add_remote(path:Path, data:dict, root:str=None) -> str|None:
     ''' add git repo remote to the last key or None '''
     
     if root is not None:
@@ -68,8 +67,8 @@ def add_remote(path:Path, d:dict, root:str=None) -> str|None:
     
     *parents, repo = path.parts
     for part in parents:
-        d = d[part]
-    d[repo] = remote
+        data = data[part]
+    data[repo] = remote
     
     return remote
 
@@ -160,8 +159,9 @@ def parse(data:dict, parents:list[str]=None, repos:dict=None, level:int=None):
     return repos
 
 
-def restore(data:dict, root:str, dry_run:bool=True, skip_existing:bool=True):
+def restore(json_path:str, root:str, dry_run:bool=True, skip_existing:bool=True):
     
+    data = load(json_path)
     descriptor = get_descriptor(data)
     data = get_data(data)
     
