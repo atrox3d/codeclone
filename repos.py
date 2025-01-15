@@ -1,9 +1,8 @@
 from pathlib import Path
 
-from paths import filter_excluded_paths, filter_only_dirs, make_relative_paths
-from data import add_descriptor, add_remote, add_to_dict, get_data, get_descriptor, parse
-from files import load, save
-
+import paths
+import data as dtx
+import files
 
 def scan(
         root:str,
@@ -29,11 +28,11 @@ def scan(
     # scan all git repos
     git_repos = root.glob('**/.git/')
     
-    repo_dirs = filter_only_dirs(git_repos)
-    repo_dirs = filter_excluded_paths(repo_dirs, exclude_paths)
+    repo_dirs = paths.filter_only_dirs(git_repos)
+    repo_dirs = paths.filter_excluded_paths(repo_dirs, exclude_paths)
     
     if relative:
-        repo_dirs = make_relative_paths(root, *repo_dirs)
+        repo_dirs = paths.make_relative_paths(root, *repo_dirs)
     
     return repo_dirs
 
@@ -43,15 +42,15 @@ def backup(json_path:str, root:str, *exclude:str, relative:bool, data:dict=None,
     total = remotes = locals = 0
 
     for repo in scan(root, *exclude, relative=relative):
-        data = add_to_dict(repo, data)
-        remote = add_remote(repo, data, root)
+        data = dtx.add_to_dict(repo, data)
+        remote = dtx.add_remote(repo, data, root)
         total += 1
         if remote is not None:
             remotes += 1
         else:
             locals += 1
     
-    data = add_descriptor(
+    data = dtx.add_descriptor(
             data,
             root, 
             *exclude, 
@@ -61,16 +60,16 @@ def backup(json_path:str, root:str, *exclude:str, relative:bool, data:dict=None,
             locals=locals,
     )
 
-    save(data, json_path, indent)
+    files.save(data, json_path, indent)
 
 
 def restore(json_path:str, root:str, dry_run:bool=True, skip_existing:bool=True):
     
-    data = load(json_path)
-    descriptor = get_descriptor(data)
-    data = get_data(data)
+    data = files.load(json_path)
+    descriptor = dtx.get_descriptor(data)
+    data = dtx.get_data(data)
     
-    repos = parse(data)
+    repos = dtx.parse(data)
     assert len(repos) == descriptor['total'], (
         f'total json repos ({descriptor['total']}) '
         f'differ from actual repos ({len(repos)})'
