@@ -3,6 +3,12 @@ from pathlib import Path
 from atrox3d import simplegit
 
 
+def make_relative_paths(root:Path, *paths:str|Path) -> list[Path]:
+    ''' convert path from absolute to relative to root, cutting out root path '''
+    
+    return [path.relative_to(root) for path in paths]
+
+
 def scan(
         root:str,
         *exclude:str,
@@ -34,9 +40,8 @@ def scan(
             )
     ]
     
-    # cut the root part if relative
     if relative:
-        repo_dirs = [Path(d).relative_to(start) for d in repo_dirs]
+        repo_dirs = make_relative_paths(start, *repo_dirs)
     
     return repo_dirs
 
