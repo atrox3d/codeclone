@@ -22,7 +22,8 @@ def add_restore_parser(subcommands:argparse._SubParsersAction) -> argparse.Argum
     
     restore:argparse.ArgumentParser  = subcommands.add_parser('restore')
     restore.add_argument('-r', '--run', action='store_true', default=False)
-    restore.add_argument('-s', '--skipexisting', action='store_true', default=True)
+    restore.add_argument('-s', '--skip_existing', action='store_true', default=True)
+    restore.add_argument('-i', '--ignore_existing', action='store_true', default=True)
     
     return restore
 
@@ -43,4 +44,10 @@ def get_options() -> argparse.Namespace:
     restore = add_restore_parser(subcommands)
     add_common_args(restore)
     
-    return parser.parse_args()
+    args = parser.parse_args()
+    
+    if args.command == 'restore':
+        if args.run and args.ignore_existing:
+            parser.error('--run and --ignore_existing cannot be both true')
+    
+    return args

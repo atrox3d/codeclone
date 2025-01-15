@@ -64,7 +64,13 @@ def backup(json_path:str, root:str, *exclude:str, relative:bool, data:dict=None,
     files.save(data, json_path, indent)
 
 
-def restore(json_path:str, root:str, dry_run:bool=True, skip_existing:bool=True):
+def restore(
+        json_path:str, 
+        root:str, 
+        dry_run:bool=True, 
+        skip_existing:bool=True,
+        ignore_existing:bool=False
+):
     
     data = files.load(json_path)
     descriptor = dtx.get_descriptor(data)
@@ -86,7 +92,9 @@ def restore(json_path:str, root:str, dry_run:bool=True, skip_existing:bool=True)
         
         git_path = (path / '.git/')
         if git_path.exists():
-            if skip_existing:
+            if ignore_existing and dry_run:
+                pass
+            elif skip_existing:
                 print(f'WARNING | path exists: {git_path}')
                 print(f'WARNING | skipping...')
                 skipped[path] = remote
