@@ -69,7 +69,8 @@ def restore(
         root:str, 
         dry_run:bool=True, 
         skip_existing:bool=True,
-        ignore_existing:bool=False
+        ignore_existing:bool=False,
+        suppress_warnings:bool=False,
 ):
     
     data = files.load(json_path)
@@ -95,8 +96,9 @@ def restore(
             if ignore_existing and dry_run:
                 pass
             elif skip_existing:
-                print(f'WARNING | path exists: {git_path}')
-                print(f'WARNING | skipping...')
+                if not suppress_warnings:
+                    print(f'WARNING | SKIPPING | path exists: {git_path}')
+                # print(f'WARNING | skipping...')
                 skipped[path] = remote
                 continue
             else:

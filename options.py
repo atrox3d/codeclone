@@ -24,6 +24,7 @@ def add_restore_parser(subcommands:argparse._SubParsersAction) -> argparse.Argum
     restore.add_argument('-r', '--run', action='store_true', default=False)
     restore.add_argument('-s', '--skip-existing', action='store_true', default=True)
     restore.add_argument('-i', '--ignore-existing', action='store_true', default=False)
+    restore.add_argument('-w', '--suppress-warnings', action='store_true', default=False)
     
     return restore
 
