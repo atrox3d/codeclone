@@ -1,4 +1,5 @@
 import argparse
+from pathlib import Path
 
 
 def add_backup_parser(subcommands:argparse._SubParsersAction) -> argparse.ArgumentParser:
@@ -52,3 +53,43 @@ def get_options() -> argparse.Namespace:
             parser.error('--run and --ignore_existing cannot be both true')
     
     return args
+
+
+def sort_options(args:argparse.Namespace, *names:str) -> list[str]:
+    result = []
+    
+    for name in names:
+        if name in vars(args):
+            result.append(name)
+    
+    for name in vars(args):
+        if name not in result:
+            result.append(name)
+    
+    return result
+
+
+def display(args:argparse.Namespace) -> bool:
+    print('-' * 60)
+    print('SELECTED OPTIONS')
+    print('-' * 60)
+    
+    dargs = vars(args)
+    for option in sort_options(args, 'command', 'path', 'json'):
+        if option == 'path':
+            print(f'{option:20}: {str(dargs[option]):10}          --> {Path(dargs[option]).expanduser()}')
+        elif option == 'run':
+            print(f'{option:20}: {str(dargs[option]):10}          --> DRY_RUN')
+        else:
+            print(f'{option:20}: {str(dargs[option]):10}')
+    
+    print('-' * 60)
+    while (yn := input('do you wish to continue? (y/n) : ')).lower() not in 'yn':
+        pass
+    
+    if yn == 'y':
+        while (yn := input('are you sure ? (y/n) : ')).lower() not in 'yn':
+            pass
+        
+    return yn == 'y'
+

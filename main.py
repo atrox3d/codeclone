@@ -5,8 +5,10 @@ import options
 if __name__ == "__main__":
     args = options.get_options()
     
-    print(f'{args = }')
-
+    if not options.display(args):
+        print('exiting...')
+        exit()
+    
     data = {}
 
     if args.command == 'backup':
