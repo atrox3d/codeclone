@@ -58,14 +58,17 @@ def add_to_dict(path:Path, data:dict=None) -> dict:
 def add_remote(path:Path, data:dict, root:str=None) -> str|None:
     ''' add git repo remote to the last key or None '''
     
+    # need root for relative paths
     if root is not None:
         git_path = Path(root).expanduser() / path
     
     remote = simplegit.git.get_remote(git_path)
     
+    # traverse tree dict
     *parents, repo = path.parts
     for part in parents:
         data = data[part]
+    
     data[repo] = remote
     
     return remote
@@ -112,17 +115,17 @@ def build_data(root:str, *exclude:str, relative:bool, data:dict=None) -> dict:
     return data
 
 
-def save(data:dict, json_path:str) -> dict:
+def save(data:dict, json_path:str, indent:int=2) -> dict:
     
     with open(json_path, 'w') as fp:
-        json.dump(data, fp, indent=2)
+        json.dump(data, fp, indent=indent)
 
 
-def backup(json_path:str, root:str, *exclude:str, relative:bool, data:dict=None) -> None:
+def backup(json_path:str, root:str, *exclude:str, relative:bool, data:dict=None, indent:int=2) -> None:
     ''' compound function: scans path and saves json'''
     
     data = build_data(root, *exclude, relative=True)
-    save(data, json_path)
+    save(data, json_path, indent)
 
 
 def load(json_path:str) -> dict:
@@ -141,22 +144,22 @@ def get_data(data:dict) -> dict:
     return data['data']
 
 
-def parse(data:dict, parents:list[str]=None, repos:dict=None):
+def parse(data_in:dict, parents:list[str]=None, data_out:dict=None):
     
-    repos = repos if repos is not None else {}
+    data_out = data_out if data_out is not None else {}
     parents = parents if parents is not None else []
     
     
-    items = list(data.items())
+    items = list(data_in.items())
     for folder, value in items:
 
         if isinstance(value, dict):
-            parse(data[folder], [*parents, folder], repos)
+            parse(data_in[folder], [*parents, folder], data_out)
         else:
             path = str(Path(*parents, folder))
-            repos[path] = value
+            data_out[path] = value
 
-    return repos
+    return data_out
 
 
 def restore(json_path:str, root:str, dry_run:bool=True, skip_existing:bool=True):
