@@ -24,8 +24,11 @@ def add_restore_parser(subcommands:argparse._SubParsersAction) -> argparse.Argum
     restore:argparse.ArgumentParser  = subcommands.add_parser('restore')
     restore.add_argument('-r', '--run', action='store_true', default=False)
     restore.add_argument('-s', '--skip-existing', action='store_true', default=True)
+    restore.add_argument('-n', '--skip-no-remote', action='store_true', default=False)
     restore.add_argument('-i', '--ignore-existing', action='store_true', default=False)
     restore.add_argument('-w', '--suppress-warnings', action='store_true', default=False)
+    restore.add_argument('-l', '--just-list', action='store_true', default=False)
+    restore.add_argument('-W', '--list-path-width', type=int, default=100)
     
     return restore
 
@@ -56,6 +59,7 @@ def get_options() -> argparse.Namespace:
 
 
 def sort_options(args:argparse.Namespace, *names:str) -> list[str]:
+    
     result = []
     
     for name in names:

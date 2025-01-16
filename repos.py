@@ -69,8 +69,11 @@ def restore(
         root:str, 
         dry_run:bool=True, 
         skip_existing:bool=True,
+        skip_no_remote:bool=False,
         ignore_existing:bool=False,
         suppress_warnings:bool=False,
+        just_list:bool=False,
+        list_path_width:int=100
 ):
     
     data = files.load(json_path)
@@ -86,6 +89,9 @@ def restore(
     skipped = {}
     created = {}
     for path, remote in repos.items():
+        
+        if skip_no_remote and remote is None:
+            continue
         
         path = Path(path)
         if descriptor['relative']:
@@ -103,6 +109,11 @@ def restore(
                 continue
             else:
                 raise FileExistsError(git_path)
+        
+        if just_list:
+            print(f'{path!s:{list_path_width}} {remote}')
+            continue
+        
         
         commands.run(f'mkdir -p {path}', dry_run)
         
