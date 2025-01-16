@@ -38,7 +38,15 @@ def scan(
     return repo_dirs
 
 
-def backup(json_path:str, root:str, *exclude:str, relative:bool, data:dict=None, indent:int=2) -> None:
+def backup(
+        json_path:str, 
+        root:str, 
+        *exclude:str, 
+        relative:bool, 
+        data:dict=None, 
+        indent:int=2,
+        skip_no_remote:bool=False,
+) -> None:
     ''' compound function: scans path and saves json'''
     total = remotes = locals = 0
 
@@ -50,6 +58,8 @@ def backup(json_path:str, root:str, *exclude:str, relative:bool, data:dict=None,
             remotes += 1
         else:
             locals += 1
+            if skip_no_remote:
+                continue
     
     data = dtx.add_descriptor(
             data,

@@ -15,6 +15,7 @@ def add_backup_parser(subcommands:argparse._SubParsersAction) -> argparse.Argume
     )
     backup.add_argument('-a', '--absolute', action='store_true')
     backup.add_argument('-i', '--indent', type=int, default=2)
+    backup.add_argument('-n', '--skip-no-remote', action='store_true', default=False)
     
     return backup
 

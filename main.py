@@ -12,7 +12,13 @@ if __name__ == "__main__":
     data = {}
 
     if args.command == 'backup':
-        repos.backup(args.json, args.path, relative=not args.absolute, indent=args.indent)
+        repos.backup(
+                args.json, 
+                args.path, 
+                relative=not args.absolute, 
+                indent=args.indent,
+                skip_no_remote=args.skip_no_remote,
+        )
     
     elif args.command == 'restore':
         repos.restore(
