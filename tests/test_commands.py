@@ -1,10 +1,9 @@
 from pathlib import Path
+from subprocess import CalledProcessError
 import pytest
 import commands
-import logging
 import os
 
-# logger = logging.getLogger(__name__)
 
 @pytest.fixture
 def testingdir():
@@ -66,3 +65,17 @@ def test_simple_ls(testingdir:Path, testingfile: Path):
     assert ret.returncode == 0
     assert ret.stderr == ''
     assert ret.stdout == f'{testingfile.name}\n'
+
+
+def test_error_raise_ls(testingdir:Path):
+    with pytest.raises(CalledProcessError) as cpe:
+        ret =commands.run(f'ls {testingdir}WRONGNAME', dry_run=False)
+    print(f'{cpe.value.returncode = }')
+    print(f'{cpe.value.cmd = }')
+    print(f'{cpe.value.stdout = }')
+    print(f'{cpe.value.stderr = }')
+
+
+def test_error_noraise_ls(testingdir:Path):
+    ret =commands.run(f'ls {testingdir}WRONGNAME', dry_run=False)
+    print(f'{ret = }')

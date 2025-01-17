@@ -34,7 +34,7 @@ def pushd(fn):
         # print(f'DRY_RUN | running {cmd} {" ".join(params)}')
 
 
-def run(command:str, path:str=None, pushd:bool=False, dry_run:bool=True) -> subprocess.CompletedProcess|None:
+def run(command:str, path:str=None, pushd:bool=False, dry_run:bool=True, check:bool=False) -> subprocess.CompletedProcess|None:
     
     cwd = os.getcwd()
     logger.debug(f'{cwd = }')
@@ -56,7 +56,7 @@ def run(command:str, path:str=None, pushd:bool=False, dry_run:bool=True) -> subp
     else:
         try:
             logger.debug(f'run | {args = }')
-            completed = subprocess.run(args, check=True, shell=False, capture_output=True, text=True)
+            completed = subprocess.run(args, check=check, shell=False, capture_output=True, text=True)
             logger.debug(f'{completed = }')
             
             return completed
