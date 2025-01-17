@@ -25,8 +25,9 @@ def run(
         path:str=None, 
         pushd:bool=False, 
         dry_run:bool=True, 
-        check:bool=False
+        raise_for_errors:bool=False
 ) -> subprocess.CompletedProcess|None:
+    ''' wraps _run managing directory context '''
     
     save_cwd = os.getcwd()
     logger.debug(f'{save_cwd = }')
@@ -36,13 +37,12 @@ def run(
         os.chdir(Path(path).resolve())
 
     try:
-        completed = _run(command, dry_run, check)
+        completed = _run(command=command, dry_run=dry_run, check=raise_for_errors)
         return completed
     
     except subprocess.CalledProcessError as cpe:
         logger.exception(cpe)
         raise
-    
     finally:
         if path is not None and pushd:
             logger.debug(f'changing back to {save_cwd = }')
@@ -54,7 +54,7 @@ def _run(
         dry_run:bool=True, 
         check:bool=False
 ) -> subprocess.CompletedProcess|None:
-    '''  '''
+    ''' runs the command if dry_run is False, raises exception if check is True '''
     
     logger.debug(f'{command = }')
 

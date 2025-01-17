@@ -59,7 +59,7 @@ def test_change_path_during_run_with_pushd(testingdir:Path, testingfile: Path):
 
 
 def test_simple_ls(testingdir:Path, testingfile: Path):
-    ret =commands.run(f'ls {testingdir}', dry_run=False)
+    ret = commands.run(f'ls {testingdir}', dry_run=False)
     
     assert ret.args == ['ls', str(testingdir)]
     assert ret.returncode == 0
@@ -69,7 +69,7 @@ def test_simple_ls(testingdir:Path, testingfile: Path):
 
 def test_error_raise_ls(testingdir:Path):
     with pytest.raises(CalledProcessError) as cpe:
-        ret =commands.run(f'ls {testingdir}WRONGNAME', dry_run=False, check=True)
+        ret = commands.run(f'ls {testingdir}WRONGNAME', dry_run=False, raise_for_errors=True)
     assert cpe.value.returncode == 1
     assert cpe.value.cmd == ['ls', f'{testingdir}WRONGNAME']
     assert cpe.value.stdout == ''
@@ -77,7 +77,7 @@ def test_error_raise_ls(testingdir:Path):
 
 
 def test_error_noraise_ls(testingdir:Path):
-    ret =commands.run(f'ls {testingdir}WRONGNAME', dry_run=False, check=False)
+    ret = commands.run(f'ls {testingdir}WRONGNAME', dry_run=False, raise_for_errors=False)
     print(f'{ret = }')
     assert ret.returncode == 1
     assert ret.args == ['ls', f'{testingdir}WRONGNAME']
