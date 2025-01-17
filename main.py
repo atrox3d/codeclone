@@ -1,8 +1,14 @@
 import repos
 import options
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
+    
+    logging.basicConfig(level=logging.INFO)
+    
     args = options.get_options()
     
     if not options.display(args):

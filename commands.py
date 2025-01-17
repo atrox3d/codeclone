@@ -65,7 +65,7 @@ def _run(
     logger.debug(f'{args = }')
 
     if dry_run:
-        logger.info(f'dry_run | {args = }')
+        logger.debug(f'dry_run | {args = }')
         return None
     else:
         logger.debug(f'run | {args = }')

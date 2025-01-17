@@ -125,12 +125,12 @@ def restore(
             continue
         
         
-        commands.run(f'mkdir -p {path}', dry_run)
+        commands.run(f'mkdir -p {path}', dry_run=dry_run)
         
         created[path] = remote
         if remote is not None:
             # commands.run(f'cd {path}', dry_run)
-            commands.run(f'git clone {remote} .', dry_run)
+            commands.run(f'git clone {remote} .', dry_run=dry_run)
             # commands.run(f'cd {cwd}', dry_run)
     
     assert skipped != created
