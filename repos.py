@@ -1,9 +1,14 @@
 from pathlib import Path
+import logging
 
 import paths
 import data as dtx
 import files
 import commands
+
+
+logger = logging.getLogger(__name__)
+
 
 def scan(
         root:str,
@@ -113,7 +118,7 @@ def restore(
                 pass
             elif skip_existing:
                 if not suppress_warnings:
-                    print(f'WARNING | SKIPPING | path exists: {git_path}')
+                    logger.warning(f'SKIPPING | path exists: {git_path}')
                 # print(f'WARNING | skipping...')
                 skipped[path] = remote
                 continue
