@@ -50,11 +50,9 @@ def _build_parser() -> argparse.ArgumentParser:
     
     backup = subcommands.add_parser('backup', parents=[parser])
     backup = _add_backup_args(backup)
-    _add_common_args(backup)
     
     restore  = subcommands.add_parser('restore', parents=[parser])
     restore = _add_restore_args(restore)
-    _add_common_args(restore)
 
     return parser
 
