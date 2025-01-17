@@ -62,7 +62,6 @@ def run(command:str, path:str=None, pushd:bool=False, dry_run:bool=True) -> subp
             return completed
             
         except subprocess.CalledProcessError as cpe:
-            # raise GitCommandException(**vars(cpe), path=path)
             logger.exception(cpe)
             raise
         
@@ -70,5 +69,3 @@ def run(command:str, path:str=None, pushd:bool=False, dry_run:bool=True) -> subp
             if path is not None and pushd:
                 logger.debug(f'changing back to {cwd = }')
                 os.chdir(cwd)
-
-
