@@ -69,13 +69,17 @@ def test_simple_ls(testingdir:Path, testingfile: Path):
 
 def test_error_raise_ls(testingdir:Path):
     with pytest.raises(CalledProcessError) as cpe:
-        ret =commands.run(f'ls {testingdir}WRONGNAME', dry_run=False)
-    print(f'{cpe.value.returncode = }')
-    print(f'{cpe.value.cmd = }')
-    print(f'{cpe.value.stdout = }')
-    print(f'{cpe.value.stderr = }')
+        ret =commands.run(f'ls {testingdir}WRONGNAME', dry_run=False, check=True)
+    assert cpe.value.returncode == 1
+    assert cpe.value.cmd == ['ls', f'{testingdir}WRONGNAME']
+    assert cpe.value.stdout == ''
+    assert f'{testingdir}WRONGNAME' in cpe.value.stderr
 
 
 def test_error_noraise_ls(testingdir:Path):
-    ret =commands.run(f'ls {testingdir}WRONGNAME', dry_run=False)
+    ret =commands.run(f'ls {testingdir}WRONGNAME', dry_run=False, check=False)
     print(f'{ret = }')
+    assert ret.returncode == 1
+    assert ret.args == ['ls', f'{testingdir}WRONGNAME']
+    assert ret.stdout == ''
+    assert f'{testingdir}WRONGNAME' in ret.stderr
