@@ -82,11 +82,11 @@ def display(args:argparse.Namespace) -> bool:
     dargs = vars(args)
     for option in sort_options(args, 'command', 'path', 'json'):
         if option == 'path':
-            print(f'{option:20}: {str(dargs[option]):10}          --> {Path(dargs[option]).expanduser()}')
+            print(f'{option:20}: {str(dargs[option]):20}          --> {Path(dargs[option]).expanduser()}')
         elif option == 'run':
-            print(f'{option:20}: {str(dargs[option]):10}          --> DRY_RUN')
+            print(f'{option:20}: {str(dargs[option]):20}          --> DRY_RUN')
         else:
-            print(f'{option:20}: {str(dargs[option]):10}')
+            print(f'{option:20}: {str(dargs[option]):20}')
     
     print('-' * 60)
     while (yn := input('do you wish to continue? (y/n) : ')).lower() not in 'yn':

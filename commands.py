@@ -65,10 +65,10 @@ def _run(
     logger.debug(f'{args = }')
 
     if dry_run:
-        logger.debug(f'dry_run | {args = }')
+        logger.info(f'DRY_RUN | {args = }')
         return None
     else:
-        logger.debug(f'run | {args = }')
+        logger.info(f'RUN     | {args = }')
         completed = subprocess.run(args, check=check, shell=False, capture_output=True, text=True)
         logger.debug(f'{completed = }')
         
