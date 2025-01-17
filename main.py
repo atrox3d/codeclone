@@ -9,9 +9,12 @@ if __name__ == "__main__":
     
     logging.basicConfig(level=logging.INFO)
     
-    args = options.get_options()
+    args = options.get()
     
-    if not options.display(args):
+    options.display(args)
+    repos.describe(args.json)
+    
+    if not options.confirm():
         print('exiting...')
         exit()
     

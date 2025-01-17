@@ -35,15 +35,18 @@ def add_restore_parser(subcommands:argparse._SubParsersAction) -> argparse.Argum
 
 
 def add_common_args(parser:argparse.ArgumentParser) -> None:
+    ''' TODO: use parents= '''
+    
     parser.add_argument('-j', '--json', required=True)
     parser.add_argument('-p', '--path', required=True)
 
 
-def get_options() -> argparse.Namespace:
+def get() -> argparse.Namespace:
     
     parser = argparse.ArgumentParser()
     
     subcommands = parser.add_subparsers(dest='command', required=True)
+    
     backup = add_backup_parser(subcommands)
     add_common_args(backup)
     
@@ -59,11 +62,11 @@ def get_options() -> argparse.Namespace:
     return args
 
 
-def sort_options(args:argparse.Namespace, *names:str) -> list[str]:
+def sort(args:argparse.Namespace, *name_index:str) -> list[str]:
     
     result = []
     
-    for name in names:
+    for name in name_index:
         if name in vars(args):
             result.append(name)
     
@@ -80,15 +83,16 @@ def display(args:argparse.Namespace) -> bool:
     print('-' * 60)
     
     dargs = vars(args)
-    for option in sort_options(args, 'command', 'path', 'json'):
+    for option in sort(args, 'command', 'path', 'json'):
         if option == 'path':
             print(f'{option:20}: {str(dargs[option]):20}          --> {Path(dargs[option]).expanduser()}')
         elif option == 'run':
             print(f'{option:20}: {str(dargs[option]):20}          --> DRY_RUN')
         else:
             print(f'{option:20}: {str(dargs[option]):20}')
-    
-    print('-' * 60)
+
+
+def confirm() -> bool:
     while (yn := input('do you wish to continue? (y/n) : ')).lower() not in 'yn':
         pass
     

@@ -140,3 +140,14 @@ def restore(
     
     assert skipped != created
     
+
+def describe(json_path:str):
+    descriptor:dict = files.load(json_path)['descriptor']
+    
+    print('-' * 60)
+    print(f'backup descriptor of {json_path}')
+    print('-' * 60)
+    for k, v in descriptor.items():
+        print(f'{k:20}: {v}')
+    
+    print('-' * 60)
