@@ -27,9 +27,6 @@ def run(
         dry_run:bool=True, 
         check:bool=False
 ) -> subprocess.CompletedProcess|None:
-    '''  '''
-    
-    logger.debug(f'{command = }')
     
     save_cwd = os.getcwd()
     logger.debug(f'{save_cwd = }')
@@ -37,6 +34,29 @@ def run(
     if path is not None:
         logger.debug(f'changing dir to {path = }')
         os.chdir(Path(path).resolve())
+
+    try:
+        completed = _run(command, dry_run, check)
+        return completed
+    
+    except subprocess.CalledProcessError as cpe:
+        logger.exception(cpe)
+        raise
+    
+    finally:
+        if path is not None and pushd:
+            logger.debug(f'changing back to {save_cwd = }')
+            os.chdir(save_cwd)
+
+
+def _run(
+        command:str, 
+        dry_run:bool=True, 
+        check:bool=False
+) -> subprocess.CompletedProcess|None:
+    '''  '''
+    
+    logger.debug(f'{command = }')
 
     # shlex.split breaks on windows paths
     # use Path(path).as_posix()
@@ -48,18 +68,8 @@ def run(
         logger.info(f'dry_run | {args = }')
         return None
     else:
-        try:
-            logger.debug(f'run | {args = }')
-            completed = subprocess.run(args, check=check, shell=False, capture_output=True, text=True)
-            logger.debug(f'{completed = }')
-            
-            return completed
-            
-        except subprocess.CalledProcessError as cpe:
-            logger.exception(cpe)
-            raise
+        logger.debug(f'run | {args = }')
+        completed = subprocess.run(args, check=check, shell=False, capture_output=True, text=True)
+        logger.debug(f'{completed = }')
         
-        finally:
-            if path is not None and pushd:
-                logger.debug(f'changing back to {save_cwd = }')
-                os.chdir(save_cwd)
+        return completed
