@@ -2,9 +2,8 @@ import argparse
 from pathlib import Path
 
 
-def add_backup_parser(subcommands:argparse._SubParsersAction) -> argparse.ArgumentParser:
+def _add_backup_args(backup:argparse.ArgumentParser) -> argparse.ArgumentParser:
     
-    backup:argparse.ArgumentParser = subcommands.add_parser('backup')
     backup.add_argument(
             '-x', '--exclude',
             # dest='array',
@@ -20,9 +19,8 @@ def add_backup_parser(subcommands:argparse._SubParsersAction) -> argparse.Argume
     return backup
 
 
-def add_restore_parser(subcommands:argparse._SubParsersAction) -> argparse.ArgumentParser:
+def _add_restore_args(restore:argparse.ArgumentParser) -> argparse.ArgumentParser:
     
-    restore:argparse.ArgumentParser  = subcommands.add_parser('restore')
     restore.add_argument('-r', '--run', action='store_true', default=False)
     restore.add_argument('-s', '--skip-existing', action='store_true', default=True)
     restore.add_argument('-n', '--skip-no-remote', action='store_true', default=False)
@@ -34,25 +32,36 @@ def add_restore_parser(subcommands:argparse._SubParsersAction) -> argparse.Argum
     return restore
 
 
-def add_common_args(parser:argparse.ArgumentParser) -> None:
+def _add_common_args(parser:argparse.ArgumentParser) -> argparse.ArgumentParser:
     ''' TODO: use parents= '''
     
     parser.add_argument('-j', '--json', required=True)
     parser.add_argument('-p', '--path', required=True)
+    
+    return parser
+
+
+def _build_parser() -> argparse.ArgumentParser:
+    
+    parser = argparse.ArgumentParser(add_help=False)
+    _add_common_args(parser)
+    
+    subcommands = parser.add_subparsers(dest='command', required=True)
+    
+    backup = subcommands.add_parser('backup', parents=[parser])
+    backup = _add_backup_args(backup)
+    _add_common_args(backup)
+    
+    restore  = subcommands.add_parser('restore', parents=[parser])
+    restore = _add_restore_args(restore)
+    _add_common_args(restore)
+
+    return parser
 
 
 def get() -> argparse.Namespace:
     
-    parser = argparse.ArgumentParser()
-    
-    subcommands = parser.add_subparsers(dest='command', required=True)
-    
-    backup = add_backup_parser(subcommands)
-    add_common_args(backup)
-    
-    restore = add_restore_parser(subcommands)
-    add_common_args(restore)
-    
+    parser = _build_parser()
     args = parser.parse_args()
     
     if args.command == 'restore':
@@ -62,7 +71,7 @@ def get() -> argparse.Namespace:
     return args
 
 
-def sort(args:argparse.Namespace, *name_index:str) -> list[str]:
+def _sort(args:argparse.Namespace, *name_index:str) -> list[str]:
     
     result = []
     
@@ -83,7 +92,7 @@ def display(args:argparse.Namespace) -> bool:
     print('-' * 60)
     
     dargs = vars(args)
-    for option in sort(args, 'command', 'path', 'json'):
+    for option in _sort(args, 'command', 'path', 'json'):
         if option == 'path':
             print(f'{option:20}: {str(dargs[option]):20}          --> {Path(dargs[option]).expanduser()}')
         elif option == 'run':
