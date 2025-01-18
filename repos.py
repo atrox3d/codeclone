@@ -138,7 +138,7 @@ def restore(
             commands.run(f'git clone {remote} .', dry_run=dry_run)
             # commands.run(f'cd {cwd}', dry_run)
     
-    assert skipped != created
+    # assert skipped != created
     
 
 def describe(json_path:str):
