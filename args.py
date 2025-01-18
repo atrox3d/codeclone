@@ -2,7 +2,7 @@ import argparse
 import sys
 
 
-def parse(args=sys.argv[2:]):
+def parse(args=sys.argv[1:]):
     ''' https://code.google.com/archive/p/argparse/issues/54 '''
     
     print(f'{args = }')

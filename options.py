@@ -55,33 +55,41 @@ def _add_common_args(parser:argparse.ArgumentParser) -> argparse.ArgumentParser:
 
 def _build_parser() -> argparse.ArgumentParser:
     
-    parser = argparse.ArgumentParser(add_help=False)
-    # _add_common_args(parser)
+    # common = argparse.ArgumentParser(add_help=False)
+    # _add_common_args(common)
     
     # https://code.google.com/archive/p/argparse/issues/54
-    # parser = argparse.ArgumentParser(parents=[common], add_help=False) 
+    parser = argparse.ArgumentParser(
+                # parents=[common], 
+                add_help=False
+            )
+    # _add_common_args(parser)
+
+    subcommands = parser.add_subparsers(
+                dest='command', 
+                # required=True
+    )
     
-    subcommands = parser.add_subparsers(dest='command', required=True)
+    common = subcommands.add_parser(
+        'common',
+        add_help=False
+    )
+    _add_common_args(common)
+
+    backup = subcommands.add_parser(
+                'backup', 
+                parents=[common]
+    )
     
-    backup = subcommands.add_parser('backup', parents=[parser])
+    backup.add_argument('-b', '--backup')
+    return parser
     # backup = _add_backup_args(backup)
     
     restore  = subcommands.add_parser('restore', parents=[parser])
+    restore.add_argument('-r', '--restore')
     # restore = _add_restore_args(restore)
 
     return parser
-
-
-def get(args=sys.argv[2:]) -> argparse.Namespace:
-    
-    parser = _build_parser()
-    args = parser.parse_args(args)
-    
-    if args.command == 'restore':
-        if args.run and args.ignore_existing:
-            parser.error('--run and --ignore_existing cannot be both true')
-    
-    return args
 
 
 def _sort(args:argparse.Namespace, *name_index:str) -> list[str]:
@@ -97,6 +105,19 @@ def _sort(args:argparse.Namespace, *name_index:str) -> list[str]:
             result.append(name)
     
     return result
+
+
+def get(args=sys.argv[1:]) -> argparse.Namespace:
+    
+    parser = _build_parser()
+    print(f'{args = }')
+    args = parser.parse_args(args)
+    
+    # if args.command == 'restore':
+        # if args.run and args.ignore_existing:
+            # parser.error('--run and --ignore_existing cannot be both true')
+    # 
+    return args
 
 
 def display(args:argparse.Namespace) -> bool:
@@ -128,4 +149,4 @@ def confirm() -> bool:
 
 
 if __name__ == "__main__":
-    get()
+    print(get())
