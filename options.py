@@ -1,5 +1,6 @@
 import argparse
 from pathlib import Path
+import sys
 
 
 def __verbose():
@@ -54,27 +55,27 @@ def _add_common_args(parser:argparse.ArgumentParser) -> argparse.ArgumentParser:
 
 def _build_parser() -> argparse.ArgumentParser:
     
-    common = argparse.ArgumentParser(add_help=False)
-    _add_common_args(common)
+    parser = argparse.ArgumentParser(add_help=False)
+    # _add_common_args(parser)
     
     # https://code.google.com/archive/p/argparse/issues/54
-    parser = argparse.ArgumentParser(parents=[common], add_help=False) 
+    # parser = argparse.ArgumentParser(parents=[common], add_help=False) 
     
     subcommands = parser.add_subparsers(dest='command', required=True)
     
     backup = subcommands.add_parser('backup', parents=[parser])
-    backup = _add_backup_args(backup)
+    # backup = _add_backup_args(backup)
     
     restore  = subcommands.add_parser('restore', parents=[parser])
-    restore = _add_restore_args(restore)
+    # restore = _add_restore_args(restore)
 
     return parser
 
 
-def get() -> argparse.Namespace:
+def get(args=sys.argv[2:]) -> argparse.Namespace:
     
     parser = _build_parser()
-    args = parser.parse_args()
+    args = parser.parse_args(args)
     
     if args.command == 'restore':
         if args.run and args.ignore_existing:
@@ -125,3 +126,6 @@ def confirm() -> bool:
         
     return yn == 'y'
 
+
+if __name__ == "__main__":
+    get()
