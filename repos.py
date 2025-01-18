@@ -85,7 +85,7 @@ def restore(
         dry_run:bool=True, 
         skip_existing:bool=True,
         skip_no_remote:bool=False,
-        ignore_existing:bool=False,
+        # ignore_existing:bool=False,
         suppress_warnings:bool=False,
         just_list:bool=False,
         list_path_width:int=100
@@ -114,12 +114,11 @@ def restore(
         
         git_path = (path / '.git/')
         if git_path.exists():
-            if ignore_existing and dry_run:
-                pass
-            elif skip_existing:
+            # if ignore_existing and dry_run:
+                # pass
+            if skip_existing:
                 if not suppress_warnings:
                     logger.warning(f'SKIPPING | path exists: {git_path}')
-                # print(f'WARNING | skipping...')
                 skipped[path] = remote
                 continue
             else:
@@ -130,12 +129,22 @@ def restore(
             continue
         
         
-        commands.run(f'mkdir -p {path}', dry_run=dry_run)
+        commands.run(
+                f'mkdir -p {path}', 
+                dry_run=dry_run,
+                raise_for_errors=True
+                )
         
         created[path] = remote
         if remote is not None:
             # commands.run(f'cd {path}', dry_run)
-            commands.run(f'git clone {remote} .', dry_run=dry_run)
+            completed = commands.run(
+                        f'git clone {remote} .', 
+                        dry_run=dry_run,
+                        path=path,
+                        pushd=True,
+                        raise_for_errors=True
+                    )
             # commands.run(f'cd {cwd}', dry_run)
     
     # assert skipped != created
