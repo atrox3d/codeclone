@@ -2,6 +2,17 @@ import argparse
 from pathlib import Path
 
 
+def __verbose():
+    ''' https://code.google.com/archive/p/argparse/issues/54 '''
+    
+    verbose_parser = argparse.ArgumentParser(add_help=False) 
+    verbose_parser.add_argument('--verbose', action='store_true')
+    
+    parser = argparse.ArgumentParser(parents=[verbose_parser]) 
+    subparsers = parser.add_subparsers() 
+    foo_parser = subparsers.add_parser('foo', parents=[verbose_parser])
+
+
 def _add_backup_args(backup:argparse.ArgumentParser) -> argparse.ArgumentParser:
     
     backup.add_argument(
@@ -43,8 +54,11 @@ def _add_common_args(parser:argparse.ArgumentParser) -> argparse.ArgumentParser:
 
 def _build_parser() -> argparse.ArgumentParser:
     
-    parser = argparse.ArgumentParser(add_help=False)
-    _add_common_args(parser)
+    common = argparse.ArgumentParser(add_help=False)
+    _add_common_args(common)
+    
+    # https://code.google.com/archive/p/argparse/issues/54
+    parser = argparse.ArgumentParser(parents=[common], add_help=False) 
     
     subcommands = parser.add_subparsers(dest='command', required=True)
     
@@ -85,6 +99,7 @@ def _sort(args:argparse.Namespace, *name_index:str) -> list[str]:
 
 
 def display(args:argparse.Namespace) -> bool:
+    
     print('-' * 60)
     print('SELECTED OPTIONS')
     print('-' * 60)
@@ -100,6 +115,7 @@ def display(args:argparse.Namespace) -> bool:
 
 
 def confirm() -> bool:
+    
     while (yn := input('do you wish to continue? (y/n) : ')).lower() not in 'yn':
         pass
     
