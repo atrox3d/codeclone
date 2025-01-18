@@ -110,11 +110,15 @@ def display(args:argparse.Namespace) -> bool:
     print('-' * 60)
     
     dargs = vars(args)
+    print(f'{dargs = }')
     for option in _sort(args, 'command', 'path', 'json'):
         if option == 'path':
             print(f'{option:20}: {str(dargs[option]):20}          --> {Path(dargs[option]).expanduser()}')
         elif option == 'run':
-            print(f'{option:20}: {str(dargs[option]):20}          --> DRY_RUN')
+            if dargs[option]:
+                print(f'{option:20}: {str(dargs[option]):20}          --> * EXECUTE *')
+            else:
+                print(f'{option:20}: {str(dargs[option]):20}          --> DRY_RUN')
         else:
             print(f'{option:20}: {str(dargs[option]):20}')
 
