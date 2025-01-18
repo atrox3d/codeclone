@@ -55,8 +55,8 @@ def _add_common_args(parser:argparse.ArgumentParser) -> argparse.ArgumentParser:
 
 def _build_parser() -> argparse.ArgumentParser:
     
-    # common = argparse.ArgumentParser(add_help=False)
-    # _add_common_args(common)
+    common = argparse.ArgumentParser(add_help=False)
+    _add_common_args(common)
     
     # https://code.google.com/archive/p/argparse/issues/54
     parser = argparse.ArgumentParser(
@@ -65,30 +65,15 @@ def _build_parser() -> argparse.ArgumentParser:
             )
     # _add_common_args(parser)
 
-    subcommands = parser.add_subparsers(
-                dest='command', 
-                # required=True
-    )
+    subcommands = parser.add_subparsers( dest='command')
     
-    common = subcommands.add_parser(
-        'common',
-        add_help=False
-    )
-    _add_common_args(common)
-
-    backup = subcommands.add_parser(
-                'backup', 
-                parents=[common]
-    )
-    
+    backup = subcommands.add_parser( 'backup', parents=[common])
     backup.add_argument('-b', '--backup')
-    return parser
     # backup = _add_backup_args(backup)
     
-    restore  = subcommands.add_parser('restore', parents=[parser])
+    restore  = subcommands.add_parser('restore', parents=[common])
     restore.add_argument('-r', '--restore')
     # restore = _add_restore_args(restore)
-
     return parser
 
 
