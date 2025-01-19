@@ -34,7 +34,7 @@ def scan(
     # scan all git repos
     git_repos = root.glob('**/.git/')
     
-    repo_dirs = paths.filter_only_dirs(git_repos)
+    repo_dirs = paths.filter_only_parent_of_dirs(git_repos)
     repo_dirs = paths.filter_excluded_paths(repo_dirs, exclude_paths)
     
     if relative:
