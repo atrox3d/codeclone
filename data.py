@@ -3,7 +3,7 @@ from pathlib import Path
 from atrox3d import simplegit
 
 
-def add_to_dict(path:Path, data:dict=None) -> dict:
+def add_path(path:Path, data:dict=None) -> dict:
     ''' create or add paths to dice as keys:dict with the last being {} '''
 
     data = data if data is not None else {}

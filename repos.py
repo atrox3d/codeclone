@@ -56,7 +56,7 @@ def backup(
     total = remotes = locals = 0
 
     for repo in scan(root, *exclude, relative=relative):
-        data = dtx.add_to_dict(repo, data)
+        data = dtx.add_path(repo, data)
         remote = dtx.add_remote(repo, data, root)
         total += 1
         if remote is not None:
