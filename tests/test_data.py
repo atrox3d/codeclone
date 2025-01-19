@@ -31,3 +31,19 @@ def test_add_remote():
     for part in repo_path.parts:
         data = data[part]
     assert data == remote
+
+
+def test_add_deascriptor():
+    data = dtx.add_descriptor(
+        {},
+        'root',
+        'exclude',
+        somearg=None
+    )
+    
+    assert data['data'] == {}
+    assert data['descriptor'] == {
+        'root': 'root',
+        'exclude': ('exclude',),
+        'somearg': None
+    }
