@@ -3,7 +3,7 @@ import logging
 
 import paths
 import data as dtx
-import files
+import jsonfiles
 import commands
 
 
@@ -76,7 +76,7 @@ def backup(
             locals=locals,
     )
 
-    files.save(data, json_path, indent)
+    jsonfiles.save(data, json_path, indent)
 
 
 def restore(
@@ -91,7 +91,7 @@ def restore(
         list_path_width:int=100
 ):
     
-    data = files.load(json_path)
+    data = jsonfiles.load(json_path)
     descriptor = dtx.get_descriptor(data)
     data = dtx.get_data(data)
     
@@ -151,7 +151,7 @@ def restore(
     
 
 def describe(json_path:str):
-    descriptor:dict = files.load(json_path)['descriptor']
+    descriptor:dict = jsonfiles.load(json_path)['descriptor']
     
     print('-' * 60)
     print(f'backup descriptor of {json_path}')
