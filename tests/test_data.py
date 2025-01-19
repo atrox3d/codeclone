@@ -34,16 +34,24 @@ def test_add_remote():
 
 
 def test_add_deascriptor():
-    data = dtx.add_descriptor(
-        {},
-        'root',
-        'exclude',
-        somearg=None
-    )
-    
+    data = dtx.add_descriptor({}, 'root', 'exclude', somearg=None)
     assert data['data'] == {}
     assert data['descriptor'] == {
         'root': 'root',
         'exclude': ('exclude',),
         'somearg': None
     }
+
+
+def test_get_deascriptor():
+    data = dtx.add_descriptor({}, 'root', 'exclude', somearg=None)
+    assert dtx.get_descriptor(data) == {
+        'root': 'root',
+        'exclude': ('exclude',),
+        'somearg': None
+    }
+
+
+def test_get_data():
+    data = dtx.add_descriptor({}, 'root', 'exclude', somearg=None)
+    assert dtx.get_data(data) == {}

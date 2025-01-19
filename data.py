@@ -39,7 +39,6 @@ def add_remote(path:Path, data:dict, root:str=None) -> dict:
 
 
 def add_descriptor(data:dict, root:str, *exclude:str, **kwargs) -> dict:
-
     descriptor = {
         'root':root,
         'exclude':exclude,
@@ -53,17 +52,14 @@ def add_descriptor(data:dict, root:str, *exclude:str, **kwargs) -> dict:
 
 
 def get_descriptor(data:dict) -> dict:
-
     return data['descriptor']
 
 
 def get_data(data:dict) -> dict:
-
     return data['data']
 
 
 def parse(data_in:dict, parents:list[str]=None, data_out:dict=None):
-
     data_out = data_out if data_out is not None else {}
     parents = parents if parents is not None else []
 
