@@ -1,5 +1,4 @@
 from pathlib import Path
-import tempfile
 
 import data as dtx
 from atrox3d import simplegit
