@@ -17,23 +17,25 @@ def add_path(path:Path, data:dict) -> dict:
     return data
 
 
-def add_remote(path:Path, data:dict, root:str=None) -> str|None:
+def add_remote(path:Path, data:dict, root:str=None) -> dict:
     ''' add git repo remote to the last key or None '''
 
     # need root for relative paths
     if root is not None:
         git_path = Path(root).expanduser() / path
-
+    else:
+        git_path = path
+    
     remote = simplegit.git.get_remote(git_path)
 
     # traverse tree dict
-    *parents, repo = path.parts
+    *parents, repo = git_path.resolve().parts
+    cursor = data
     for part in parents:
-        data = data[part]
+        cursor = cursor[part]
+    cursor[repo] = remote
 
-    data[repo] = remote
-
-    return remote
+    return data
 
 
 def add_descriptor(data:dict, root:str, *exclude:str, **kwargs) -> dict:
