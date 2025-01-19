@@ -5,9 +5,6 @@ from atrox3d import simplegit
 
 def add_path(path:Path, data:dict) -> dict:
     ''' create or add paths to dice as keys:dict with the last being {} '''
-
-    # data = data if data is not None else {}
-
     cursor = data
 
     for part in path.parts:

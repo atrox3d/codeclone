@@ -55,3 +55,25 @@ def test_get_deascriptor():
 def test_get_data():
     data = dtx.add_descriptor({}, 'root', 'exclude', somearg=None)
     assert dtx.get_data(data) == {}
+
+
+def test_parse():
+    data = {
+        '/': {
+            'test': {
+                'path': {
+                    'torepo1': {
+                        'repo1': 'https://repo.git',
+                    },
+                    'torepo2': {
+                        'repo2': 'https://repo.git',
+                    },
+                }
+            }
+        }
+    }
+    parsed = dtx.parse(data)
+    assert parsed == {
+        '/test/path/torepo1/repo1': 'https://repo.git', 
+        '/test/path/torepo2/repo2': 'https://repo.git'
+    }
