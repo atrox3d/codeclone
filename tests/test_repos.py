@@ -9,7 +9,7 @@ import jsonfiles
 
 
 @pytest.fixture(scope='module')
-def test_td():
+def test_temp_dir():
     with tempfile.TemporaryDirectory() as tdname:
         print(tdname, type(tdname))
         td = Path(tdname)
@@ -21,18 +21,18 @@ def test_td():
 
 
 @pytest.fixture(scope='module')
-def clone_repo(test_td):
+def clone_repo(test_temp_dir):
     return commands.run(
-        f'git clone . {test_td}/testclone',
+        f'git clone . {test_temp_dir}/testclone',
         raise_for_errors=True
     )
 
 
-def test_fixture(test_td, clone_repo):
+def test_fixture(test_temp_dir, clone_repo):
     print([
-        str(p.relative_to(test_td))
+        str(p.relative_to(test_temp_dir))
         for p in
-        Path(test_td).glob('*/*')
+        Path(test_temp_dir).glob('*/*')
     ])
     print(clone_repo.returncode)
     print(clone_repo.stdout)
@@ -53,8 +53,8 @@ def test_scan_absolute():
     assert scanned == [root]
 
 
-def test_backup_todict_relative(test_td, clone_repo):
-    data = repos.backup(test_td, relative=True)
+def test_backup_todict_relative(test_temp_dir, clone_repo):
+    data = repos.backup(test_temp_dir, relative=True)
     print(data)
     
     assert list(data.keys()) == ['descriptor', 'data']
@@ -64,8 +64,8 @@ def test_backup_todict_relative(test_td, clone_repo):
     assert list(data['data'].keys()) == ['testclone']
 
 
-def test_backup_todict_absolute(test_td, clone_repo):
-    data = repos.backup(test_td, relative=False)
+def test_backup_todict_absolute(test_temp_dir, clone_repo):
+    data = repos.backup(test_temp_dir, relative=False)
     
     assert list(data.keys()) == ['descriptor', 'data']
     assert list(data['descriptor'].keys()) == [
@@ -73,24 +73,24 @@ def test_backup_todict_absolute(test_td, clone_repo):
     ]
     
     cursor = data['data']
-    parts = Path(test_td).parts
+    parts = Path(test_temp_dir).parts
     for part in parts:
         cursor = cursor[part]
     assert list(cursor.keys()) == ['testclone']
     assert cursor['testclone'] != {}
 
 
-def test_backup_tojson_relative(test_td, clone_repo):
-    jsonpath = str(Path(test_td, 'repos.json'))
-    data = repos.backup(test_td, json_path=jsonpath, relative=True)
+def test_backup_tojson_relative(test_temp_dir, clone_repo):
+    jsonpath = str(Path(test_temp_dir, 'repos.json'))
+    data = repos.backup(test_temp_dir, json_path=jsonpath, relative=True)
     jsondata = jsonfiles.load(jsonpath)
     
     assert jsondata == data
 
 
-def test_backup_tojson_absolute(test_td, clone_repo):
-    jsonpath = str(Path(test_td, 'repos.json'))
-    data = repos.backup(test_td, json_path=jsonpath, relative=False)
+def test_backup_tojson_absolute(test_temp_dir, clone_repo):
+    jsonpath = str(Path(test_temp_dir, 'repos.json'))
+    data = repos.backup(test_temp_dir, json_path=jsonpath, relative=False)
     jsondata = jsonfiles.load(jsonpath)
     
     assert jsondata == data
