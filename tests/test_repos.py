@@ -5,6 +5,7 @@ import paths
 
 import repos
 import commands
+import jsonfiles
 
 
 @pytest.fixture(scope='module')
@@ -77,3 +78,20 @@ def test_backup_todict_absolute(test_td, clone_repo):
         cursor = cursor[part]
     assert list(cursor.keys()) == ['testclone']
     assert cursor['testclone'] != {}
+
+
+def test_backup_tojson_relative(test_td, clone_repo):
+    jsonpath = str(Path(test_td, 'repos.json'))
+    data = repos.backup(test_td, json_path=jsonpath, relative=True)
+    jsondata = jsonfiles.load(jsonpath)
+    
+    assert jsondata == data
+
+
+def test_backup_tojson_absolute(test_td, clone_repo):
+    jsonpath = str(Path(test_td, 'repos.json'))
+    data = repos.backup(test_td, json_path=jsonpath, relative=False)
+    jsondata = jsonfiles.load(jsonpath)
+    
+    assert jsondata == data
+

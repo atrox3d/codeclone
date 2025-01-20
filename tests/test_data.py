@@ -44,7 +44,7 @@ def test_add_deascriptor():
     assert data['data'] == {}
     assert data['descriptor'] == {
         'root': 'root',
-        'exclude': ('exclude',),
+        'exclude': ['exclude'],
         'somearg': None
     }
 
@@ -53,7 +53,7 @@ def test_get_deascriptor():
     data = dtx.add_descriptor({}, 'root', 'exclude', somearg=None)
     assert dtx.get_descriptor(data) == {
         'root': 'root',
-        'exclude': ('exclude',),
+        'exclude': ['exclude'],
         'somearg': None
     }
 

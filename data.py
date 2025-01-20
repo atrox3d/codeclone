@@ -46,8 +46,8 @@ def add_remote(path:Path, data:dict, root:str=None) -> dict:
 
 def add_descriptor(data:dict, root:str, *exclude:str, **kwargs) -> dict:
     descriptor = {
-        'root':root,
-        'exclude':exclude,
+        'root': root,
+        'exclude': list(exclude),
         **kwargs
     }
     new = {}
