@@ -25,7 +25,7 @@ def scan(
     '''
     
     # expand ~ and check if valid path
-    root = Path(root).expanduser()
+    root = Path(root).expanduser()#.resolve()
     assert root.exists(), f'path {root} does not exist'
     
     # create exclude list
@@ -44,9 +44,9 @@ def scan(
 
 
 def backup(
-        json_path:str, 
         root:str, 
         *exclude:str, 
+        json_path:str=None,
         relative:bool, 
         data:dict=None, 
         indent:int=2,
@@ -54,8 +54,12 @@ def backup(
 ) -> None:
     ''' compound function: scans path and saves json'''
     total = remotes = locals = 0
-
+    data = {} if data is None else data
+    
     for repo in scan(root, *exclude, relative=relative):
+        
+        assert Path(root) != repo, f'repo path {repo!r} and root path {root!r} cannot be the same'
+        
         data = dtx.add_path(repo, data)
         remote = dtx.add_remote(repo, data, root)
         total += 1
@@ -75,8 +79,11 @@ def backup(
             remotes=remotes,
             locals=locals,
     )
-
-    jsonfiles.save(data, json_path, indent)
+    
+    if json_path is not None:
+        jsonfiles.save(data, json_path, indent)
+    
+    return data
 
 
 def restore(

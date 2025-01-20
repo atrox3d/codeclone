@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 import data as dtx
 from atrox3d import simplegit
 
@@ -17,6 +19,11 @@ def test_add_path():
             }
         }
     }
+
+
+def test_add_path_exception():
+    with pytest.raises(ValueError):
+        dtx.add_path(Path('.'), {})
 
 
 def test_add_remote():

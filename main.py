@@ -22,8 +22,8 @@ if __name__ == "__main__":
 
     if args.command == 'backup':
         repos.backup(
-                args.json, 
-                args.path, 
+                args.path,
+                json_path=args.json, 
                 relative=not args.absolute, 
                 indent=args.indent,
                 skip_no_remote=args.skip_no_remote,

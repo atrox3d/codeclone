@@ -5,6 +5,12 @@ from atrox3d import simplegit
 
 def add_path(path:Path, data:dict) -> dict:
     ''' create or add paths to dice as keys:dict with the last being {} '''
+    
+    # if path == Path('.'):
+        # raise ValueError('cannot scan current dir')
+    if not len(path.parts):
+        raise ValueError(f'path {str(path)!r} has no path components')
+    
     cursor = data
 
     for part in path.parts:
@@ -28,6 +34,7 @@ def add_remote(path:Path, data:dict, root:str=None) -> dict:
     # traverse tree dict
     *parents, repo = git_path.resolve().parts
     cursor = data
+    print(parents, repo, cursor)
     for part in parents:
         cursor = cursor[part]
     cursor[repo] = remote
