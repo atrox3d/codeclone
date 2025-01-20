@@ -1,5 +1,6 @@
 from pathlib import Path
 import logging
+import subprocess
 
 import paths
 import data as dtx
@@ -86,6 +87,41 @@ def backup(
     return data
 
 
+def update_restore_status(
+        results:dict,
+        path:Path|str,
+        remote:str=None,
+        skipped_existing:bool=None,
+        skipped_noremote:bool=None,
+        listed:bool=None,
+        created:bool=None,
+        cloned:bool=None,
+        completed:subprocess.CompletedProcess=None,
+) -> dict:
+    status_args = {k:v for k, v in locals().items() if k not in ['results', 'path', 'remote']}
+    print(status_args)
+    
+    results[path] = results.get(path, {
+        'remote': remote,
+        'status': {
+            'skipped_existing': None,
+            'skipped_noremote': None,
+            'listed': None,
+            'created': None,
+            'cloned': None,
+            'completed': None,
+        }
+    })
+    
+    status_update = {
+        k: v if results[path]['status'][k] is None else results[path]['status'][k]
+        for k, v in status_args.items()
+    }
+    
+    results[path]['status'] = status_update
+    return status_update
+
+
 def restore(
         json_path:str, 
         root:str, 
@@ -108,16 +144,16 @@ def restore(
         f'differ from actual repos ({len(repos)})'
     )
     
-    skipped_existing = {}
-    skipped_noremote = {}
-    created = {}
-    listed = {}
-    cloned = {}
+    # skipped_existing = {}
+    # skipped_noremote = {}
+    # created = {}
+    # listed = {}
+    # cloned = {}
     results = {}
     for path, remote in repos.items():
-        
         if skip_no_remote and remote is None:
-            skipped_noremote[path] = remote
+            update_restore_status(results, path, remote, skipped_noremote=True)
+            # results[path]['skipped_noremote'] = True
             continue
         
         path = Path(path)
@@ -131,13 +167,15 @@ def restore(
             if skip_existing:
                 if not suppress_warnings:
                     logger.warning(f'SKIPPING | path exists: {git_path}')
-                skipped_existing[path] = remote
+                update_restore_status(results, path, remote, skipped_existing=True)
+                # skipped_existing[path] = remote
                 continue
             else:
                 raise FileExistsError(git_path)
         
         if just_list:
-            listed[path] = remote
+            update_restore_status(results, path, remote, listed=True)
+            # listed[path] = remote
             print(f'{path!s:{list_path_width}} {remote}')
             continue
         
@@ -147,7 +185,8 @@ def restore(
                 dry_run=dry_run,
                 raise_for_errors=True
                 )
-        created[path] = remote
+        update_restore_status(results, path, remote, created=True)
+        # created[path] = remote
         
         if remote is not None:
             # commands.run(f'cd {path}', dry_run)
@@ -158,15 +197,19 @@ def restore(
                         pushd=True,
                         raise_for_errors=True
                     )
-            cloned[path] = remote
+            update_restore_status(results, path, remote, 
+                    cloned=True,
+                    completed=completed
+            )
+            # cloned[path] = remote
             # commands.run(f'cd {cwd}', dry_run)
     
     # assert skipped != created
-    results['skipped_noremote'] = skipped_noremote
-    results['skipped_existing'] = skipped_existing
-    results['created'] = created
-    results['cloned'] = created
-    results['listed'] = listed
+    # results['skipped_noremote'] = skipped_noremote
+    # results['skipped_existing'] = skipped_existing
+    # results['created'] = created
+    # results['cloned'] = created
+    # results['listed'] = listed
     
     return results
 
