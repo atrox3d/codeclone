@@ -1,4 +1,5 @@
 from pathlib import Path
+import subprocess
 import tempfile
 import pytest
 import paths
@@ -21,14 +22,34 @@ def test_temp_dir():
 
 
 @pytest.fixture(scope='module')
-def clone_repo(test_temp_dir):
+def clone_repo(test_temp_dir: str) -> subprocess.CompletedProcess:
     return commands.run(
         f'git clone . {test_temp_dir}/testclone',
         raise_for_errors=True
     )
 
 
-def test_fixture(test_temp_dir, clone_repo):
+@pytest.fixture
+def jsonpath(test_temp_dir: str) -> str:
+    return str(Path(test_temp_dir, 'repos.json'))
+
+
+@pytest.fixture
+def restore_root(test_temp_dir) -> Path:
+    restore_root = Path(test_temp_dir, 'restore_root')
+    restore_root.mkdir()
+    assert restore_root.exists()
+    assert restore_root.is_dir()
+    
+    return restore_root
+
+
+@pytest.fixture
+def restore_repo(restore_root) -> str:
+    return str(restore_root / 'testclone')
+
+
+def test_fixture(test_temp_dir: str, clone_repo: subprocess.CompletedProcess):
     print([
         str(p.relative_to(test_temp_dir))
         for p in
@@ -53,7 +74,7 @@ def test_scan_absolute():
     assert scanned == [root]
 
 
-def test_backup_todict_relative(test_temp_dir, clone_repo):
+def test_backup_todict_relative(test_temp_dir: str, clone_repo: subprocess.CompletedProcess):
     data = repos.backup(test_temp_dir, relative=True)
     print(data)
     
@@ -64,7 +85,7 @@ def test_backup_todict_relative(test_temp_dir, clone_repo):
     assert list(data['data'].keys()) == ['testclone']
 
 
-def test_backup_todict_absolute(test_temp_dir, clone_repo):
+def test_backup_todict_absolute(test_temp_dir: str, clone_repo: subprocess.CompletedProcess):
     data = repos.backup(test_temp_dir, relative=False)
     
     assert list(data.keys()) == ['descriptor', 'data']
@@ -80,35 +101,51 @@ def test_backup_todict_absolute(test_temp_dir, clone_repo):
     assert cursor['testclone'] != {}
 
 
-def test_backup_tojson_relative(test_temp_dir, clone_repo):
-    jsonpath = str(Path(test_temp_dir, 'repos.json'))
+def test_backup_tojson_relative(
+    test_temp_dir: str, 
+    clone_repo: subprocess.CompletedProcess,
+    jsonpath:str
+):
     data = repos.backup(test_temp_dir, json_path=jsonpath, relative=True)
     jsondata = jsonfiles.load(jsonpath)
     
     assert jsondata == data
 
 
-def test_backup_tojson_absolute(test_temp_dir, clone_repo):
-    jsonpath = str(Path(test_temp_dir, 'repos.json'))
+def test_backup_tojson_absolute(
+    test_temp_dir: str, 
+    clone_repo: subprocess.CompletedProcess,
+    jsonpath:str
+):
     data = repos.backup(test_temp_dir, json_path=jsonpath, relative=False)
     jsondata = jsonfiles.load(jsonpath)
     
     assert jsondata == data
 
 
-def test_restore_relative(test_temp_dir, clone_repo):
-    jsonpath = str(Path(test_temp_dir, 'repos.json'))
-    restore_root = Path(test_temp_dir, 'restore_root')
-    restore_root.mkdir()
-    assert restore_root.exists()
-    assert restore_root.is_dir()
-    
+def test_restore_relative_list(
+    test_temp_dir: str, 
+    clone_repo: subprocess.CompletedProcess,
+    jsonpath:str,
+    restore_root:Path,
+    restore_repo:str
+):
     data = repos.backup(test_temp_dir, json_path=jsonpath, relative=True)
-    
     results = repos.restore(
         jsonpath,
         restore_root,
         just_list=True
     )
     
-    print(results)
+    assert results.get(restore_repo) is not None
+    result = results[restore_repo]
+    
+    assert 'remote' in result.keys()
+    assert result['remote'] is not None
+    
+    assert 'status' in result.keys()
+    status = result['status']
+    assert sum(1 for k, v in status.items() if v is not None) == 1
+    assert status['listed'] is True
+    
+    

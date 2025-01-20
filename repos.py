@@ -100,7 +100,7 @@ def update_restore_status(
 ) -> dict:
     status_args = {k:v for k, v in locals().items() if k not in ['results', 'path', 'remote']}
     # print(status_args)
-    
+    path = str(path)
     results[path] = results.get(path, {
         'remote': remote,
         'status': {
