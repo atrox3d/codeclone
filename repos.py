@@ -99,7 +99,7 @@ def update_restore_status(
         completed:subprocess.CompletedProcess=None,
 ) -> dict:
     status_args = {k:v for k, v in locals().items() if k not in ['results', 'path', 'remote']}
-    print(status_args)
+    # print(status_args)
     
     results[path] = results.get(path, {
         'remote': remote,

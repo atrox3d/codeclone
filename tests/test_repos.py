@@ -105,3 +105,10 @@ def test_restore_relative(test_temp_dir, clone_repo):
     
     data = repos.backup(test_temp_dir, json_path=jsonpath, relative=True)
     
+    results = repos.restore(
+        jsonpath,
+        restore_root,
+        just_list=True
+    )
+    
+    print(results)
