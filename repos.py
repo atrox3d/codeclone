@@ -96,7 +96,7 @@ def restore(
         suppress_warnings:bool=False,
         just_list:bool=False,
         list_path_width:int=100
-):
+) -> dict:
     
     data = jsonfiles.load(json_path)
     descriptor = dtx.get_descriptor(data)
@@ -108,11 +108,16 @@ def restore(
         f'differ from actual repos ({len(repos)})'
     )
     
-    skipped = {}
+    skipped_existing = {}
+    skipped_noremote = {}
     created = {}
+    listed = {}
+    cloned = {}
+    results = {}
     for path, remote in repos.items():
         
         if skip_no_remote and remote is None:
+            skipped_noremote[path] = remote
             continue
         
         path = Path(path)
@@ -126,12 +131,13 @@ def restore(
             if skip_existing:
                 if not suppress_warnings:
                     logger.warning(f'SKIPPING | path exists: {git_path}')
-                skipped[path] = remote
+                skipped_existing[path] = remote
                 continue
             else:
                 raise FileExistsError(git_path)
         
         if just_list:
+            listed[path] = remote
             print(f'{path!s:{list_path_width}} {remote}')
             continue
         
@@ -141,8 +147,8 @@ def restore(
                 dry_run=dry_run,
                 raise_for_errors=True
                 )
-        
         created[path] = remote
+        
         if remote is not None:
             # commands.run(f'cd {path}', dry_run)
             completed = commands.run(
@@ -152,10 +158,18 @@ def restore(
                         pushd=True,
                         raise_for_errors=True
                     )
+            cloned[path] = remote
             # commands.run(f'cd {cwd}', dry_run)
     
     # assert skipped != created
+    results['skipped_noremote'] = skipped_noremote
+    results['skipped_existing'] = skipped_existing
+    results['created'] = created
+    results['cloned'] = created
+    results['listed'] = listed
     
+    return results
+
 
 def describe(json_path:str):
     descriptor:dict = jsonfiles.load(json_path)['descriptor']

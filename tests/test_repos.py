@@ -95,3 +95,13 @@ def test_backup_tojson_absolute(test_temp_dir, clone_repo):
     
     assert jsondata == data
 
+
+def test_restore_relative(test_temp_dir, clone_repo):
+    jsonpath = str(Path(test_temp_dir, 'repos.json'))
+    restore_root = Path(test_temp_dir, 'restore_root')
+    restore_root.mkdir()
+    assert restore_root.exists()
+    assert restore_root.is_dir()
+    
+    data = repos.backup(test_temp_dir, json_path=jsonpath, relative=True)
+    
