@@ -23,7 +23,7 @@ def add_path(path:Path, data:dict) -> dict:
 def add_remote(path:Path, data:dict, root:str=None) -> dict:
     ''' add git repo remote to the last key or None '''
 
-    # need root for relative paths
+    # need root for get_remote()
     if root is not None:
         git_path = Path(root).expanduser() / path
     else:
@@ -32,9 +32,11 @@ def add_remote(path:Path, data:dict, root:str=None) -> dict:
     remote = simplegit.git.get_remote(git_path)
 
     # traverse tree dict
-    *parents, repo = git_path.resolve().parts
+    *parents, repo = path.parts
     cursor = data
-    print(parents, repo, cursor)
+    # print(f'{parents = }')
+    # print(f'{repo    = }')
+    # print(f'{data    = }')
     for part in parents:
         cursor = cursor[part]
     cursor[repo] = remote

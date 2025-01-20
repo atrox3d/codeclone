@@ -51,7 +51,7 @@ def backup(
         data:dict=None, 
         indent:int=2,
         skip_no_remote:bool=False,
-) -> None:
+) -> dict:
     ''' compound function: scans path and saves json'''
     total = remotes = locals = 0
     data = {} if data is None else data
