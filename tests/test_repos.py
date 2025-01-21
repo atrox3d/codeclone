@@ -1,57 +1,8 @@
 from pathlib import Path
 import subprocess
-import tempfile
-import pytest
-import paths
 
 import repos
-import commands
 import jsonfiles
-
-
-@pytest.fixture(scope='module')
-def test_temp_dir():
-    with tempfile.TemporaryDirectory() as tdname:
-        print(tdname, type(tdname))
-        td = Path(tdname)
-        assert td.exists()
-        assert td.is_dir
-        yield tdname
-
-    assert not td.exists()
-
-
-@pytest.fixture(scope='module')
-def clone_repo(test_temp_dir: str) -> subprocess.CompletedProcess:
-    return commands.run(
-        f'git clone . {test_temp_dir}/testclone',
-        raise_for_errors=True
-    )
-
-
-@pytest.fixture
-def jsonpath(test_temp_dir: str) -> str:
-    return str(Path(test_temp_dir, 'repos.json'))
-
-
-@pytest.fixture
-def restore_root(test_temp_dir) -> Path:
-    restore_root = Path(test_temp_dir, 'restore_root')
-    restore_root.mkdir()
-    assert restore_root.exists()
-    assert restore_root.is_dir()
-    
-    return restore_root
-
-
-@pytest.fixture
-def restore_repo_relative(restore_root) -> str:
-    return str(restore_root / 'testclone')
-
-
-@pytest.fixture
-def restore_repo_absolute(test_temp_dir) -> str:
-    return str(Path(test_temp_dir) / 'testclone')
 
 
 def test_fixture(test_temp_dir: str, clone_repo: subprocess.CompletedProcess):
