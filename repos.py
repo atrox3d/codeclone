@@ -157,8 +157,12 @@ def restore(
             continue
         
         path = Path(path)
+        print(f'RESTORE | {path = }')
         if descriptor['relative']:
             path = Path(root).expanduser() / path
+            print(f'RESTORE | RELATIVE | {path = }')
+        else:
+            print(f'RESTORE | ABSOLUTE | {path = }')
         
         git_path = (path / '.git/')
         if git_path.exists():
