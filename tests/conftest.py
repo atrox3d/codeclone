@@ -5,7 +5,9 @@ import commands
 import subprocess
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(
+        # scope='module'
+)
 def test_temp_dir():
     # print('FIXTURE | TEST_TEMP_DIR | start')
     with tempfile.TemporaryDirectory() as tdname:
@@ -19,7 +21,9 @@ def test_temp_dir():
     # print('FIXTURE | TEST_TEMP_DIR | end')
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(
+        # scope='module'
+)
 def clone_repo(test_temp_dir: str) -> subprocess.CompletedProcess:
     # print('FIXTURE | CLONE_REPO | start')
     # print('FIXTURE | CLONE_REPO | end')
@@ -62,7 +66,9 @@ def restore_repo_absolute(test_temp_dir) -> str:
     return str(Path(test_temp_dir) / 'testclone')
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(
+        # scope='module'
+)
 def test_temp_content(test_temp_dir):
     td = Path(test_temp_dir)
     dirs = [Path(td, dir) for dir in 'one two three'.split()]

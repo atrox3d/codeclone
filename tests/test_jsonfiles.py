@@ -13,5 +13,6 @@ def test_save(test_temp_dir):
 
 def test_load(test_temp_dir):
     jsonpath = Path(test_temp_dir, 'test.json')
+    jf.save({}, jsonpath)
     data = jf.load(jsonpath)
     assert data == {}

@@ -56,5 +56,4 @@ def test_restore_absolute_list(
     status = result['status']
     assert sum(1 for k, v in status.items() if v is not None) == 1
     # assert status['listed'] is True
-    
-    
+

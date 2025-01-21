@@ -162,6 +162,7 @@ def restore(
             path = Path(root).expanduser() / path
             print(f'RESTORE | RELATIVE | {path = }')
         else:
+            logger.warning(f'{descriptor['relative'] = }: ignoring {root = }')
             print(f'RESTORE | ABSOLUTE | {path = }')
         
         git_path = (path / '.git/')
